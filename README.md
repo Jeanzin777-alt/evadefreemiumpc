@@ -1,4 +1,4 @@
--- Bhop Script para EVADE (Roblox) - PC VERSION
+-- Bhop Script para EVADE (Roblox) - PC VERSION (Estilo Solara)
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -14,7 +14,7 @@ local spaceHeld = false
 local lastJumpTime = 0
 local jumpCooldown = 0.08
 local uiVisible = true
-local bounceMultiplier = 1 -- Input do player
+local bounceMultiplier = 1
 local lastRampBoost = 0
 local rampBoostCooldown = 0.5
 
@@ -24,41 +24,46 @@ screenGui.Name = "EvadeBhopUI"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Frame principal (CENTRALIZADO E TRANSPARENTE)
+-- Frame principal
 local frame = Instance.new("Frame")
 frame.Name = "MainFrame"
 frame.Size = UDim2.new(0, 320, 0, 320)
 frame.Position = UDim2.new(0.5, -160, 0.5, -160)
-frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-frame.BackgroundTransparency = 0.3
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+frame.BackgroundTransparency = 0.15
 frame.BorderSizePixel = 0
 frame.Parent = screenGui
 
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 12)
+corner.CornerRadius = UDim.new(0, 10)
 corner.Parent = frame
 
--- ===== BARRA DE TITULO (ARRASTÁVEL) =====
+-- Adicionar stroke (borda)
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(60, 60, 80)
+stroke.Thickness = 1
+stroke.Parent = frame
+
+-- ===== BARRA DE TITULO =====
 local titleBar = Instance.new("Frame")
 titleBar.Name = "TitleBar"
-titleBar.Size = UDim2.new(1, 0, 0, 50)
+titleBar.Size = UDim2.new(1, 0, 0, 45)
 titleBar.Position = UDim2.new(0, 0, 0, 0)
-titleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-titleBar.BackgroundTransparency = 0.2
+titleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
 titleBar.BorderSizePixel = 0
 titleBar.Parent = frame
 
 local titleBarCorner = Instance.new("UICorner")
-titleBarCorner.CornerRadius = UDim.new(0, 12)
+titleBarCorner.CornerRadius = UDim.new(0, 10)
 titleBarCorner.Parent = titleBar
 
--- Titulo
+-- Título
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, -80, 1, 0)
-title.Position = UDim2.new(0, 10, 0, 0)
+title.Position = UDim2.new(0, 15, 0, 0)
 title.BackgroundTransparency = 1
-title.TextColor3 = Color3.fromRGB(255, 100, 100)
-title.TextSize = 18
+title.TextColor3 = Color3.fromRGB(220, 220, 255)
+title.TextSize = 16
 title.Font = Enum.Font.GothamBold
 title.Text = "⚡ EVADE BHOP"
 title.TextXAlignment = Enum.TextXAlignment.Left
@@ -67,66 +72,69 @@ title.Parent = titleBar
 
 -- Botão Minimizar
 local minBtn = Instance.new("TextButton")
-minBtn.Size = UDim2.new(0, 35, 0, 35)
-minBtn.Position = UDim2.new(1, -80, 0.5, -17.5)
-minBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-minBtn.BackgroundTransparency = 0.3
-minBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
-minBtn.TextSize = 18
+minBtn.Size = UDim2.new(0, 32, 0, 32)
+minBtn.Position = UDim2.new(1, -75, 0.5, -16)
+minBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+minBtn.TextColor3 = Color3.fromRGB(200, 200, 220)
+minBtn.TextSize = 16
 minBtn.Font = Enum.Font.GothamBold
-minBtn.Text = "-"
+minBtn.Text = "−"
 minBtn.BorderSizePixel = 0
 minBtn.Parent = titleBar
 
 local minCorner = Instance.new("UICorner")
-minCorner.CornerRadius = UDim.new(0, 6)
+minCorner.CornerRadius = UDim.new(0, 5)
 minCorner.Parent = minBtn
 
 -- Botão Fechar
 local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 35, 0, 35)
-closeBtn.Position = UDim2.new(1, -40, 0.5, -17.5)
-closeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-closeBtn.BackgroundTransparency = 0.3
-closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeBtn.TextSize = 18
+closeBtn.Size = UDim2.new(0, 32, 0, 32)
+closeBtn.Position = UDim2.new(1, -40, 0.5, -16)
+closeBtn.BackgroundColor3 = Color3.fromRGB(70, 40, 40)
+closeBtn.TextColor3 = Color3.fromRGB(220, 220, 220)
+closeBtn.TextSize = 16
 closeBtn.Font = Enum.Font.GothamBold
-closeBtn.Text = "X"
+closeBtn.Text = "✕"
 closeBtn.BorderSizePixel = 0
 closeBtn.Parent = titleBar
 
 local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 6)
+closeCorner.CornerRadius = UDim.new(0, 5)
 closeCorner.Parent = closeBtn
 
 -- Container de conteúdo
 local content = Instance.new("Frame")
 content.Name = "Content"
-content.Size = UDim2.new(1, 0, 1, -50)
-content.Position = UDim2.new(0, 0, 0, 50)
+content.Size = UDim2.new(1, 0, 1, -45)
+content.Position = UDim2.new(0, 0, 0, 45)
 content.BackgroundTransparency = 1
+content.ClipsDescendants = true
 content.Parent = frame
 
 -- ===== OPÇÃO BHOP =====
 local bhopFrame = Instance.new("Frame")
-bhopFrame.Size = UDim2.new(1, -20, 0, 95)
+bhopFrame.Size = UDim2.new(1, -20, 0, 90)
 bhopFrame.Position = UDim2.new(0, 10, 0, 10)
-bhopFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-bhopFrame.BackgroundTransparency = 0.3
+bhopFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
 bhopFrame.BorderSizePixel = 0
 bhopFrame.Parent = content
 
 local bhopCorner = Instance.new("UICorner")
-bhopCorner.CornerRadius = UDim.new(0, 8)
+bhopCorner.CornerRadius = UDim.new(0, 6)
 bhopCorner.Parent = bhopFrame
+
+local bhopStroke = Instance.new("UIStroke")
+bhopStroke.Color = Color3.fromRGB(60, 60, 80)
+bhopStroke.Thickness = 1
+bhopStroke.Parent = bhopFrame
 
 -- Label Bhop
 local bhopLabel = Instance.new("TextLabel")
-bhopLabel.Size = UDim2.new(1, -80, 0, 24)
+bhopLabel.Size = UDim2.new(1, -80, 0, 22)
 bhopLabel.Position = UDim2.new(0, 12, 0, 8)
 bhopLabel.BackgroundTransparency = 1
-bhopLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
-bhopLabel.TextSize = 15
+bhopLabel.TextColor3 = Color3.fromRGB(255, 180, 100)
+bhopLabel.TextSize = 14
 bhopLabel.Font = Enum.Font.GothamBold
 bhopLabel.Text = "🔥 BHOP"
 bhopLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -134,23 +142,23 @@ bhopLabel.Parent = bhopFrame
 
 -- Descrição
 local bhopDesc = Instance.new("TextLabel")
-bhopDesc.Size = UDim2.new(1, -80, 0, 20)
-bhopDesc.Position = UDim2.new(0, 12, 0, 34)
+bhopDesc.Size = UDim2.new(1, -80, 0, 18)
+bhopDesc.Position = UDim2.new(0, 12, 0, 32)
 bhopDesc.BackgroundTransparency = 1
-bhopDesc.TextColor3 = Color3.fromRGB(180, 180, 180)
-bhopDesc.TextSize = 12
+bhopDesc.TextColor3 = Color3.fromRGB(160, 160, 180)
+bhopDesc.TextSize = 11
 bhopDesc.Font = Enum.Font.Gotham
-bhopDesc.Text = "Hold SPACE to hop"
+bhopDesc.Text = "Hold SPACE"
 bhopDesc.TextXAlignment = Enum.TextXAlignment.Left
 bhopDesc.Parent = bhopFrame
 
 -- Status
 local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(1, -80, 0, 18)
-statusLabel.Position = UDim2.new(0, 12, 0, 56)
+statusLabel.Size = UDim2.new(1, -80, 0, 16)
+statusLabel.Position = UDim2.new(0, 12, 0, 53)
 statusLabel.BackgroundTransparency = 1
-statusLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-statusLabel.TextSize = 11
+statusLabel.TextColor3 = Color3.fromRGB(130, 130, 150)
+statusLabel.TextSize = 10
 statusLabel.Font = Enum.Font.Gotham
 statusLabel.Text = "Status: OFF"
 statusLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -158,10 +166,9 @@ statusLabel.Parent = bhopFrame
 
 -- Toggle BHOP
 local toggleBg = Instance.new("Frame")
-toggleBg.Size = UDim2.new(0, 52, 0, 30)
-toggleBg.Position = UDim2.new(1, -68, 0, 12)
-toggleBg.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-toggleBg.BackgroundTransparency = 0.3
+toggleBg.Size = UDim2.new(0, 48, 0, 28)
+toggleBg.Position = UDim2.new(1, -60, 0.5, -14)
+toggleBg.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
 toggleBg.BorderSizePixel = 0
 toggleBg.Parent = bhopFrame
 
@@ -170,9 +177,9 @@ toggleCorner.CornerRadius = UDim.new(0, 6)
 toggleCorner.Parent = toggleBg
 
 local toggleCircle = Instance.new("Frame")
-toggleCircle.Size = UDim2.new(0, 24, 0, 24)
-toggleCircle.Position = UDim2.new(0, 3, 0, 3)
-toggleCircle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+toggleCircle.Size = UDim2.new(0, 22, 0, 22)
+toggleCircle.Position = UDim2.new(0, 3, 0.5, -11)
+toggleCircle.BackgroundColor3 = Color3.fromRGB(200, 200, 220)
 toggleCircle.BorderSizePixel = 0
 toggleCircle.Parent = toggleBg
 
@@ -182,40 +189,43 @@ circleCorner.Parent = toggleCircle
 
 -- ===== OPÇÃO MODIFY BOUNCE =====
 local bounceFrame = Instance.new("Frame")
-bounceFrame.Size = UDim2.new(1, -20, 0, 110)
-bounceFrame.Position = UDim2.new(0, 10, 0, 115)
-bounceFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-bounceFrame.BackgroundTransparency = 0.3
+bounceFrame.Size = UDim2.new(1, -20, 0, 105)
+bounceFrame.Position = UDim2.new(0, 10, 0, 110)
+bounceFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
 bounceFrame.BorderSizePixel = 0
 bounceFrame.Parent = content
 
 local bounceCorner = Instance.new("UICorner")
-bounceCorner.CornerRadius = UDim.new(0, 8)
+bounceCorner.CornerRadius = UDim.new(0, 6)
 bounceCorner.Parent = bounceFrame
+
+local bounceStroke = Instance.new("UIStroke")
+bounceStroke.Color = Color3.fromRGB(60, 60, 80)
+bounceStroke.Thickness = 1
+bounceStroke.Parent = bounceFrame
 
 -- Label Modify Bounce
 local bounceLabel = Instance.new("TextLabel")
-bounceLabel.Size = UDim2.new(1, -80, 0, 24)
+bounceLabel.Size = UDim2.new(1, -80, 0, 22)
 bounceLabel.Position = UDim2.new(0, 12, 0, 8)
 bounceLabel.BackgroundTransparency = 1
 bounceLabel.TextColor3 = Color3.fromRGB(255, 150, 100)
-bounceLabel.TextSize = 15
+bounceLabel.TextSize = 14
 bounceLabel.Font = Enum.Font.GothamBold
 bounceLabel.Text = "⚡ MODIFY BOUNCE"
 bounceLabel.TextXAlignment = Enum.TextXAlignment.Left
 bounceLabel.Parent = bounceFrame
 
--- Input box para velocidade
+-- Input box
 local inputBox = Instance.new("TextBox")
-inputBox.Size = UDim2.new(1, -80, 0, 28)
-inputBox.Position = UDim2.new(0, 12, 0, 35)
-inputBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-inputBox.BackgroundTransparency = 0.3
-inputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-inputBox.TextSize = 13
+inputBox.Size = UDim2.new(1, -80, 0, 26)
+inputBox.Position = UDim2.new(0, 12, 0, 32)
+inputBox.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+inputBox.TextColor3 = Color3.fromRGB(220, 220, 220)
+inputBox.TextSize = 12
 inputBox.Font = Enum.Font.Gotham
 inputBox.Text = "150"
-inputBox.PlaceholderText = "Digite velocidade"
+inputBox.PlaceholderText = "Velocidade"
 inputBox.BorderSizePixel = 0
 inputBox.Parent = bounceFrame
 
@@ -223,25 +233,30 @@ local inputCorner = Instance.new("UICorner")
 inputCorner.CornerRadius = UDim.new(0, 4)
 inputCorner.Parent = inputBox
 
+local inputStroke = Instance.new("UIStroke")
+inputStroke.Color = Color3.fromRGB(60, 60, 80)
+inputStroke.Thickness = 1
+inputStroke.Parent = inputBox
+
 -- Info
 local bounceInfo = Instance.new("TextLabel")
-bounceInfo.Size = UDim2.new(1, -80, 0, 16)
-bounceInfo.Position = UDim2.new(0, 12, 0, 68)
+bounceInfo.Size = UDim2.new(1, -80, 0, 15)
+bounceInfo.Position = UDim2.new(0, 12, 0, 62)
 bounceInfo.BackgroundTransparency = 1
-bounceInfo.TextColor3 = Color3.fromRGB(150, 150, 150)
-bounceInfo.TextSize = 10
+bounceInfo.TextColor3 = Color3.fromRGB(130, 130, 150)
+bounceInfo.TextSize = 9
 bounceInfo.Font = Enum.Font.Gotham
-bounceInfo.Text = "x10 de velocidade em rampas"
+bounceInfo.Text = "x10 em rampas"
 bounceInfo.TextXAlignment = Enum.TextXAlignment.Left
 bounceInfo.Parent = bounceFrame
 
 -- Status Bounce
 local statusBounce = Instance.new("TextLabel")
-statusBounce.Size = UDim2.new(1, -80, 0, 16)
-statusBounce.Position = UDim2.new(0, 12, 0, 85)
+statusBounce.Size = UDim2.new(1, -80, 0, 15)
+statusBounce.Position = UDim2.new(0, 12, 0, 80)
 statusBounce.BackgroundTransparency = 1
-statusBounce.TextColor3 = Color3.fromRGB(150, 150, 150)
-statusBounce.TextSize = 10
+statusBounce.TextColor3 = Color3.fromRGB(130, 130, 150)
+statusBounce.TextSize = 9
 statusBounce.Font = Enum.Font.Gotham
 statusBounce.Text = "Status: OFF"
 statusBounce.TextXAlignment = Enum.TextXAlignment.Left
@@ -249,10 +264,9 @@ statusBounce.Parent = bounceFrame
 
 -- Toggle MODIFY BOUNCE
 local bounceTtoggleBg = Instance.new("Frame")
-bounceTtoggleBg.Size = UDim2.new(0, 52, 0, 30)
-bounceTtoggleBg.Position = UDim2.new(1, -68, 0, 12)
-bounceTtoggleBg.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-bounceTtoggleBg.BackgroundTransparency = 0.3
+bounceTtoggleBg.Size = UDim2.new(0, 48, 0, 28)
+bounceTtoggleBg.Position = UDim2.new(1, -60, 0.5, -14)
+bounceTtoggleBg.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
 bounceTtoggleBg.BorderSizePixel = 0
 bounceTtoggleBg.Parent = bounceFrame
 
@@ -261,9 +275,9 @@ bounceToggleCorner.CornerRadius = UDim.new(0, 6)
 bounceToggleCorner.Parent = bounceTtoggleBg
 
 local bounceToggleCircle = Instance.new("Frame")
-bounceToggleCircle.Size = UDim2.new(0, 24, 0, 24)
-bounceToggleCircle.Position = UDim2.new(0, 3, 0, 3)
-bounceToggleCircle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+bounceToggleCircle.Size = UDim2.new(0, 22, 0, 22)
+bounceToggleCircle.Position = UDim2.new(0, 3, 0.5, -11)
+bounceToggleCircle.BackgroundColor3 = Color3.fromRGB(200, 200, 220)
 bounceToggleCircle.BorderSizePixel = 0
 bounceToggleCircle.Parent = bounceTtoggleBg
 
@@ -274,29 +288,29 @@ bounceCircleCorner.Parent = bounceToggleCircle
 -- Funções de atualizar toggles
 local function updateBhopToggle()
     if bhopEnabled then
-        toggleBg.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
-        toggleCircle.Position = UDim2.new(0, 25, 0, 3)
-        statusLabel.TextColor3 = Color3.fromRGB(100, 200, 100)
-        statusLabel.Text = "Status: ON ✓"
+        toggleBg.BackgroundColor3 = Color3.fromRGB(80, 140, 80)
+        toggleCircle.Position = UDim2.new(0, 23, 0.5, -11)
+        statusLabel.TextColor3 = Color3.fromRGB(100, 220, 100)
+        statusLabel.Text = "Status: ON"
     else
-        toggleBg.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-        toggleCircle.Position = UDim2.new(0, 3, 0, 3)
-        statusLabel.TextColor3 = Color3.fromRGB(200, 100, 100)
-        statusLabel.Text = "Status: OFF ✗"
+        toggleBg.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+        toggleCircle.Position = UDim2.new(0, 3, 0.5, -11)
+        statusLabel.TextColor3 = Color3.fromRGB(150, 100, 100)
+        statusLabel.Text = "Status: OFF"
     end
 end
 
 local function updateBounceToggle()
     if modifyBounceEnabled then
-        bounceTtoggleBg.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
-        bounceToggleCircle.Position = UDim2.new(0, 25, 0, 3)
-        statusBounce.TextColor3 = Color3.fromRGB(100, 200, 100)
-        statusBounce.Text = "Status: ON ✓"
+        bounceTtoggleBg.BackgroundColor3 = Color3.fromRGB(80, 140, 80)
+        bounceToggleCircle.Position = UDim2.new(0, 23, 0.5, -11)
+        statusBounce.TextColor3 = Color3.fromRGB(100, 220, 100)
+        statusBounce.Text = "Status: ON"
     else
-        bounceTtoggleBg.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-        bounceToggleCircle.Position = UDim2.new(0, 3, 0, 3)
-        statusBounce.TextColor3 = Color3.fromRGB(200, 100, 100)
-        statusBounce.Text = "Status: OFF ✗"
+        bounceTtoggleBg.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+        bounceToggleCircle.Position = UDim2.new(0, 3, 0.5, -11)
+        statusBounce.TextColor3 = Color3.fromRGB(150, 100, 100)
+        statusBounce.Text = "Status: OFF"
     end
 end
 
@@ -335,35 +349,35 @@ end)
 
 -- Hover effects
 minBtn.MouseEnter:Connect(function()
-    minBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    minBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 90)
 end)
 
 minBtn.MouseLeave:Connect(function()
-    minBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    minBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
 end)
 
 closeBtn.MouseEnter:Connect(function()
-    closeBtn.BackgroundColor3 = Color3.fromRGB(220, 70, 70)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(90, 50, 50)
 end)
 
 closeBtn.MouseLeave:Connect(function()
-    closeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(70, 40, 40)
 end)
 
 bhopFrame.MouseEnter:Connect(function()
-    bhopFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    bhopFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
 end)
 
 bhopFrame.MouseLeave:Connect(function()
-    bhopFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    bhopFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
 end)
 
 bounceFrame.MouseEnter:Connect(function()
-    bounceFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    bounceFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
 end)
 
 bounceFrame.MouseLeave:Connect(function()
-    bounceFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    bounceFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
 end)
 
 -- ===== MINIMIZAR COM BOTÃO =====
@@ -371,11 +385,11 @@ local minimized = false
 minBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     if minimized then
-        frame.Size = UDim2.new(0, 320, 0, 50)
-        minBtn.Text = "+"
+        frame.Size = UDim2.new(0, 320, 0, 45)
+        minBtn.Text = "□"
     else
         frame.Size = UDim2.new(0, 320, 0, 320)
-        minBtn.Text = "-"
+        minBtn.Text = "−"
     end
 end)
 
@@ -384,7 +398,7 @@ closeBtn.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
 
--- ===== MINIMIZAR COM CTRL DIREITO (SUMIR TUDO) =====
+-- ===== MINIMIZAR COM CTRL DIREITO =====
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     if input.KeyCode == Enum.KeyCode.RightControl then
@@ -392,15 +406,15 @@ UserInputService.InputBegan:Connect(function(input, gp)
         screenGui.Enabled = uiVisible
         if uiVisible then
             UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-            print("✓ UI Visível - Mouse Desbloqueado")
+            print("✓ UI Visível")
         else
             UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
-            print("✗ UI Oculta - Mouse Bloqueado")
+            print("✗ UI Oculta")
         end
     end
 end)
 
--- ===== ARRASTAR WINDOW (PELA BARRA) =====
+-- ===== ARRASTAR WINDOW =====
 local dragging = false
 local dragStart = nil
 local frameStart = nil
@@ -444,10 +458,9 @@ local function isOnRamp()
     if result then
         local hitPart = result.Instance
         if hitPart then
-            -- Verifica o ângulo da superfície
             local normal = result.Normal
             local angle = math.deg(math.acos(math.min(1, math.max(-1, normal.Y))))
-            return angle > 15 -- Se tiver mais de 15 graus, é uma rampa
+            return angle > 15
         end
     end
     return false
@@ -468,7 +481,7 @@ local function isGrounded()
     return result ~= nil
 end
 
--- Detectar espaço (PC)
+-- Detectar espaço
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     if input.KeyCode == Enum.KeyCode.Space then
@@ -521,14 +534,6 @@ player.CharacterAdded:Connect(function(newChar)
     rootPart = character:WaitForChild("HumanoidRootPart")
 end)
 
--- Iniciar com mouse desbloqueado
 UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 
-print("═══════════════════════════════════")
-print("✓ EVADE BHOP - PC VERSION")
-print("✓ UI centralizada e transparente")
-print("✓ CTRL DIREITO = Minimizar/Mostrar")
-print("✓ Mouse: Desbloqueado na UI")
-print("✓ Segure ESPAÇO para pular")
-print("✓ Modify Bounce: x10 velocidade")
-print("═══════════════════════════════════")
+print("✓ EVADE BHOP - Estilo Solara - PC VERSION"

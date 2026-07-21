@@ -1,4 +1,4 @@
--- Script Auto Jump para Evade com UI Customizada
+-- Script Auto Jump para Evade com UI Customizada e Arrastável
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
@@ -118,6 +118,14 @@ local function createUI()
     listLayout.Padding = UDim.new(0, 10)
     listLayout.SortOrder = Enum.SortOrder.LayoutOrder
     listLayout.Parent = scrollFrame
+
+    -- Padding para o ScrollFrame
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 10)
+    padding.PaddingRight = UDim.new(0, 10)
+    padding.PaddingTop = UDim.new(0, 10)
+    padding.PaddingBottom = UDim.new(0, 10)
+    padding.Parent = scrollFrame
 
     -- Função para criar Toggle
     local function createToggle(name, description, callback)
@@ -312,16 +320,17 @@ local function createUI()
         end
     end)
 
-    -- Função de arrastar
+    -- ===== SISTEMA DE ARRASTAR =====
     local dragging = false
-    local dragStart
-    local startPos
+    local dragStart = nil
+    local startPos = nil
+    local mouse = player:GetMouse()
 
     titleBar.InputBegan:Connect(function(input, gameProcessed)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
-            dragStart = input.Position
-            startPos = mainFrame.Position
+            dragStart = mouse.X
+            startPos = mainFrame.Position.X.Offset
         end
     end)
 
@@ -333,8 +342,8 @@ local function createUI()
 
     UserInputService.InputChanged:Connect(function(input, gameProcessed)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local delta = input.Position - dragStart
-            mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            local delta = mouse.X - dragStart
+            mainFrame.Position = UDim2.new(0, startPos + delta, mainFrame.Position.Y.Scale, mainFrame.Position.Y.Offset)
         end
     end)
 
